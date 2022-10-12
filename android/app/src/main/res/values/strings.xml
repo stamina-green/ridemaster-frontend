@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">RideMaster App</string>
+    <string name="title_activity_main">RideMaster App</string>
+    <string name="package_name">com.stamina.transportation.ridemaster</string>
+    <string name="custom_url_scheme">com.stamina.transportation.ridemaster</string>
+</resources>
