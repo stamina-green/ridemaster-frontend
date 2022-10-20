@@ -47,15 +47,6 @@ export default class HomeView extends Vue {
     let lat = 50;
     let lng = 14;
     return { lat, lng };
-
-    // this.positions.forEach((pos) => {
-    //   lat += pos.lat;
-    //   lng += pos.lng;
-    // });
-    
-    // lat = lat / this.positions.length;
-    // lng = lng / this.positions.length;
-    
   }
 
   points!: any[];

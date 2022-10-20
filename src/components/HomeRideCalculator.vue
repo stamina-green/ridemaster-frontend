@@ -64,24 +64,30 @@ export default class Calculation extends Vue {
   wanted = 0;
   price = 0;
   cost = 0;
+  enquiryId = 0;
 
-  pointOne= { lat: undefined, lng: undefined };
-  pointTwo= { lat: undefined, lng: undefined };
+  pointOne: LatLng = { lat: undefined, lng: undefined }
+  pointTwo: LatLng = { lat: undefined, lng: undefined };
 
 
   async calculateThis() {
-    const res = await axios.post("http://localhost:3000/enquiry", {
-      origin: this.origin,
-      destiny: this.destination,
+    const res = await axios.post("http://192.168.1.37:3000/enquiry", {
+      origin: this.fromHome ? this.origin : this.destination,
+      destiny: this.fromHome ? this.destination : this.origin,
     });
     this.distance = res.data.direction.distance / 1000 + "km";
     this.liters = res.data.finance.consumed;
     this.price = res.data.finance.price;
     this.wanted = res.data.finance.wanted;
     this.cost = res.data.finance.cost;
-    this.pointOne = res.data.end.location
-    this.pointTwo = res.data.start.location
+    this.pointOne = res.data.end.location;
+    this.pointTwo = res.data.start.location;
+    this.enquiryId = res.data.id;
 
   }
+}
+interface LatLng {
+  lat: number | undefined;
+  lng: number | undefined;
 }
 </script>

@@ -1,17 +1,16 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <CalculationModule class="cal"/>
+    <HomeRideCalculator class="cal"/>
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-import CalculationModule from '../components/CalculationModule.vue'; // @ is an alias to /src
+import HomeRideCalculator from '../components/HomeRideCalculator.vue'; // @ is an alias to /src
 
 @Options({
   components: {
-    CalculationModule,
+    HomeRideCalculator,
   },
 })
 export default class HomeView extends Vue {}
@@ -19,7 +18,7 @@ export default class HomeView extends Vue {}
 
 <style lang="scss">
   .cal {
-    margin: 5rem 30rem
+    margin: 5rem 0rem
   }
   
 </style>
