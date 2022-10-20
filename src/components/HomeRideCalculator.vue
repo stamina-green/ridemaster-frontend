@@ -1,43 +1,62 @@
 <template>
   <div @keydown.enter="calculateThis()">
-    <input
-      type="checkbox"
-      name="hey"
-      v-model="fromHome"
-      placeholder="ahj"
-      id="a"
-    />
-    Z Černošic <br />
-    <br /><br />
+    <n-card title="Card">
+      Černošice
+      <n-switch v-model:value="toHome" size="large">
+        <template #checked-icon>
+          <ArrowForwardOutline></ArrowForwardOutline>
+        </template>
+        <template #unchecked-icon>
+          <ArrowBackOutline></ArrowBackOutline>
+        </template>
+      </n-switch>
+      Praha
 
-    <input v-if="!fromHome" type="text" name="Origin" placeholder="Místo odjezdu" v-model="destination" /> <br />
+      <NInput
+        v-if="toHome"
+        type="text"
+        name="Origin"
+        placeholder="Místo odjezdu"
+        v-model="destination"
+      />
+      <br />
 
-    <select name="Destiny" id="destin" v-model="origin">
-      <option value="Brusinkova 1974, Cernosice">Brusinková 1974</option>
-      <option value="Mokropeska 1713, Cernosice">Mokropeská</option>
-    </select>
-    <br />
-    <input v-if="fromHome" type="text" name="Origin" placeholder="Místo doručení" v-model="destination" /> <br />
+      <n-popselect v-model:value="origin" :options="selection" class="abx">
+        <n-button class="abx">{{ selection.filter(a => a.value == origin)[0].label || "Popselect" }}</n-button>
+      </n-popselect>
 
+      <br />
+      <NInput
+        v-if="!toHome"
+        type="text"
+        name="Origin"
+        placeholder="Místo doručení"
+        v-model="destination"
+      />
+      <br />
 
-    <div>
-      <ul>
-        <li>
-          Distance <b>{{ distance }}</b>
-        </li>
-        <li>
-          Liters <b>{{ liters }}</b>
-        </li>
-          Wanted liter
-        <b> {{ wanted }} </b>
-        <li>
-          Price <b>{{ price }}</b>
-        </li>
-        <li>
-          Cost <b>{{ cost }}</b>
-        </li>
-      </ul>
-    </div>
+      <div>
+        <ul>
+          <li>
+            Distance <b>{{ distance }}</b>
+          </li>
+          <li>
+            Liters <b>{{ liters }}</b>
+          </li>
+          <li>
+            Wanted liter
+            <b> {{ wanted }} </b>
+          </li>
+          <li>
+            Price <b>{{ price }}</b>
+          </li>
+          <li>
+            Cost <b>{{ cost }}</b>
+          </li>
+        </ul>
+      </div>
+    </n-card>
+
     <MapComponents :points="[pointOne, pointTwo]"></MapComponents>
   </div>
 </template>
@@ -46,36 +65,48 @@
 import { Vue, Options } from "vue-class-component";
 import axios from "axios";
 import MapComponents from "./MapComponents.vue";
-
+import { NInput, NCard, NSwitch, NPopselect, NButton } from "naive-ui";
+import { ArrowBackOutline, ArrowForwardOutline } from "@vicons/ionicons5";
 
 @Options({
   components: {
     MapComponents,
-  }
+    NInput,
+    NCard,
+    NSwitch,
+    ArrowBackOutline,
+    ArrowForwardOutline,
+    NPopselect,
+    NButton,
+  },
 })
 export default class Calculation extends Vue {
   destination = "";
   origin = "Brusinkova 1974, Cernosice";
 
-  fromHome = true;
+  toHome = true;
 
-  distance = "";
+  distance = "0 km";
   liters = 0;
   wanted = 0;
   price = 0;
   cost = 0;
   enquiryId = 0;
+  selection = [
+    {label: "Brusinková 1974", value: "Brusinkova 1974, Cernosice"},
+    {label: "Mokropeská", value: "Mokropeska 1713, Cernosice"}
+  ]
+  
 
-  pointOne: LatLng = { lat: undefined, lng: undefined }
+  pointOne: LatLng = { lat: undefined, lng: undefined };
   pointTwo: LatLng = { lat: undefined, lng: undefined };
 
-
   async calculateThis() {
-    const res = await axios.post("http://192.168.1.37:3000/enquiry", {
-      origin: this.fromHome ? this.origin : this.destination,
-      destiny: this.fromHome ? this.destination : this.origin,
+    const res = await axios.post("http://localhost:3000/enquiry", {
+      origin: this.toHome ? this.destination : this.origin,
+      destiny: this.toHome ? this.origin : this.destination,
     });
-    this.distance = res.data.direction.distance / 1000 + "km";
+    this.distance = res.data.direction.distance / 1000 + " km";
     this.liters = res.data.finance.consumed;
     this.price = res.data.finance.price;
     this.wanted = res.data.finance.wanted;
@@ -83,7 +114,6 @@ export default class Calculation extends Vue {
     this.pointOne = res.data.end.location;
     this.pointTwo = res.data.start.location;
     this.enquiryId = res.data.id;
-
   }
 }
 interface LatLng {
@@ -91,3 +121,18 @@ interface LatLng {
   lng: number | undefined;
 }
 </script>
+
+<style scoped lang="scss">
+.n-card {
+  margin: 10px auto;
+  max-width: 300px;
+  text-align: left;
+}
+.n-input {
+  margin: 0.3rem 0px;
+}
+.abx {
+  width: 100%
+}
+
+</style>
