@@ -16,9 +16,5 @@ import HomeRideCalculator from '../components/HomeRideCalculator.vue'; // @ is a
 export default class HomeView extends Vue {}
 </script>
 
-<style lang="scss">
-  .cal {
-    margin: 5rem 0rem
-  }
-  
+<style lang="scss">  
 </style>

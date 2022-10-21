@@ -1,8 +1,8 @@
 <template>
   <div @keydown.enter="calculateThis()">
-    <n-card title="Card">
+    <n-card title="Get a Ride!">
       Černošice
-      <n-switch v-model:value="toHome" size="large">
+      <n-switch v-model:value="fromHome" size="large">
         <template #checked-icon>
           <ArrowForwardOutline></ArrowForwardOutline>
         </template>
@@ -13,27 +13,24 @@
       Praha
 
       <NInput
-        v-if="toHome"
+        v-if="!fromHome"
         type="text"
         name="Origin"
         placeholder="Místo odjezdu"
         v-model="destination"
       />
-      <br />
 
       <n-popselect v-model:value="origin" :options="selection" class="abx">
-        <n-button class="abx">{{ selection.filter(a => a.value == origin)[0].label || "Popselect" }}</n-button>
+        <n-button class="abx">{{ selection.filter(a => a.value == origin)[0].label || "Choose" }}</n-button>
       </n-popselect>
 
-      <br />
       <NInput
-        v-if="!toHome"
+        v-if="fromHome"
         type="text"
         name="Origin"
         placeholder="Místo doručení"
         v-model="destination"
       />
-      <br />
 
       <div>
         <ul>
@@ -84,7 +81,7 @@ export default class Calculation extends Vue {
   destination = "";
   origin = "Brusinkova 1974, Cernosice";
 
-  toHome = true;
+  fromHome = true;
 
   distance = "0 km";
   liters = 0;
@@ -103,8 +100,8 @@ export default class Calculation extends Vue {
 
   async calculateThis() {
     const res = await axios.post("http://localhost:3000/enquiry", {
-      origin: this.toHome ? this.destination : this.origin,
-      destiny: this.toHome ? this.origin : this.destination,
+      origin: this.fromHome ? this.origin : this.destination,
+      destiny: this.fromHome ? this.destination : this.origin,
     });
     this.distance = res.data.direction.distance / 1000 + " km";
     this.liters = res.data.finance.consumed;
@@ -131,8 +128,13 @@ interface LatLng {
 .n-input {
   margin: 0.3rem 0px;
 }
+.n-switch {
+  padding: 0.7rem 0.2rem;
+}
+
+
 .abx {
-  width: 100%
+  width: 100%;
 }
 
 </style>
