@@ -17,7 +17,7 @@
         type="text"
         name="Origin"
         placeholder="Místo odjezdu"
-        v-model="destination"
+        v-model:value="destination"
       />
 
       <n-popselect v-model:value="origin" :options="selection" class="abx">
@@ -29,7 +29,7 @@
         type="text"
         name="Origin"
         placeholder="Místo doručení"
-        v-model="destination"
+        v-model:value="destination"
       />
 
       <div>
@@ -111,6 +111,7 @@ export default class Calculation extends Vue {
     this.pointOne = res.data.end.location;
     this.pointTwo = res.data.start.location;
     this.enquiryId = res.data.id;
+    this.destination = this.fromHome? res.data.end.address : res.data.start.address;
   }
 }
 interface LatLng {
