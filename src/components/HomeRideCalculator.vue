@@ -1,5 +1,5 @@
 <template>
-  <div @keydown.enter="calculateThis()">
+  <div @keydown.enter="calculateThis()" @keydown.escape="print()">
     <n-card title="Get a Ride!">
       Černošice
       <n-switch v-model:value="fromHome" size="large">
@@ -65,6 +65,9 @@ import MapComponents from "./MapComponents.vue";
 import { NInput, NCard, NSwitch, NPopselect, NButton } from "naive-ui";
 import { ArrowBackOutline, ArrowForwardOutline } from "@vicons/ionicons5";
 
+//@ts-expect-error No types
+import html2pdf from "html2pdf.js";
+
 @Options({
   components: {
     MapComponents,
@@ -113,11 +116,50 @@ export default class Calculation extends Vue {
     this.enquiryId = res.data.id;
     this.destination = this.fromHome? res.data.end.address : res.data.start.address;
   }
+  public print() {
+    let myText = text
+    myText = myText.replaceAll("$time", new Date().toLocaleString())
+    myText = myText.replaceAll("$origin", this.origin)
+    myText = myText.replaceAll("$destiny", this.destination)
+    myText = myText.replaceAll("$distance", this.distance)
+    myText = myText.replaceAll("$price", this.price.toString())
+    let a = html2pdf().set({margin: 15, html2canvas: {scale: 2}, image: {type: "jpeg", quality: 1}}).from(myText).toPdf().save()
+  }
 }
 interface LatLng {
   lat: number | undefined;
   lng: number | undefined;
 }
+
+
+
+const text = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+<body>
+   <h3>
+    Výpis jízdy
+   </h3> 
+   Dne $time <br><br>
+   Jízda z místa <b> $origin </b> do <b> $destiny </b>
+   <h5>Celkem $price Kč</h5>
+   Matěj Holubec &nbsp;&nbsp;&nbsp; _______________ <br>
+   přepravce&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objednatel
+</body>
+
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 150%;
+    }
+</style>
+</html>`
 </script>
 
 <style scoped lang="scss">
