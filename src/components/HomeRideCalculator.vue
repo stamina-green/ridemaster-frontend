@@ -102,7 +102,7 @@ export default class Calculation extends Vue {
   pointTwo: LatLng = { lat: undefined, lng: undefined };
 
   async calculateThis() {
-    const res = await axios.post("http://localhost:3000/enquiry", {
+    const res = await axios.post("https://rideiq.stamina.green/enquiry", {
       origin: this.fromHome ? this.origin : this.destination,
       destiny: this.fromHome ? this.destination : this.origin,
     });
