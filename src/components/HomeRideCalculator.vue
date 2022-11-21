@@ -114,15 +114,15 @@ export default class Calculation extends Vue {
     this.pointOne = res.data.end.location;
     this.pointTwo = res.data.start.location;
     this.enquiryId = res.data.id;
-    this.destination = this.fromHome? res.data.end.address : res.data.start.address;
+    this.destination = this.fromHome ? res.data.end.address : res.data.start.address;
   }
   public print() {
     let myText = text
     myText = myText.replaceAll("$time", new Date().toLocaleString())
-    myText = myText.replaceAll("$origin", this.origin)
-    myText = myText.replaceAll("$destiny", this.destination)
+    myText = myText.replaceAll("$origin", this.fromHome ? this.origin : this.destination)
+    myText = myText.replaceAll("$destiny", this.fromHome ? this.destination : this.origin)
     myText = myText.replaceAll("$distance", this.distance)
-    myText = myText.replaceAll("$price", this.price.toString())
+    myText = myText.replaceAll("$price", this.price === 0 ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : this.price.toString())
     let a = html2pdf().set({margin: 15, html2canvas: {scale: 2}, image: {type: "jpeg", quality: 1}}).from(myText).toPdf().save()
   }
 }
