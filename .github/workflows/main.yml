@@ -23,3 +23,4 @@ jobs:
       - run: rm -r /var/www/ride/*
       - run: mv ./dist/* /var/www/ride
       - run: chmod -R 777 /var/www/ride
+ 
