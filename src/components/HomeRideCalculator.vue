@@ -21,7 +21,9 @@
       />
 
       <n-popselect v-model:value="origin" :options="selection" class="abx">
-        <n-button class="abx">{{ selection.filter(a => a.value == origin)[0].label || "Choose" }}</n-button>
+        <n-button class="abx">{{
+          selection.filter((a) => a.value == origin)[0].label || "Choose"
+        }}</n-button>
       </n-popselect>
 
       <NInput
@@ -33,24 +35,20 @@
       />
 
       <div>
-        <ul>
-          <li>
-            Distance <b>{{ distance }}</b>
-          </li>
-          <li>
-            Liters <b>{{ liters }}</b>
-          </li>
-          <li>
-            Wanted liter
-            <b> {{ wanted }} </b>
-          </li>
-          <li>
-            Price <b>{{ price }}</b>
-          </li>
-          <li>
-            Cost <b>{{ cost }}</b>
-          </li>
-        </ul>
+        <n-grid :cols="2" x-gap="25">
+          <n-grid-item>
+            <n-statistic label="Distance" :value="distance" />
+          </n-grid-item>
+          <n-grid-item>
+            <n-statistic label="Liters" :value="liters" />
+          </n-grid-item>
+          <n-grid-item>
+            <n-statistic label="Price" :value="price + ' Kč'" />
+          </n-grid-item>
+          <n-grid-item>
+            <n-statistic label="One way" :value="cost + ' Kč'" />
+          </n-grid-item>
+        </n-grid>
       </div>
     </n-card>
 
@@ -62,7 +60,16 @@
 import { Vue, Options } from "vue-class-component";
 import axios from "axios";
 import MapComponents from "./MapComponents.vue";
-import { NInput, NCard, NSwitch, NPopselect, NButton } from "naive-ui";
+import {
+  NInput,
+  NCard,
+  NSwitch,
+  NPopselect,
+  NButton,
+  NStatistic,
+  NGrid,
+  NGridItem,
+} from "naive-ui";
 import { ArrowBackOutline, ArrowForwardOutline } from "@vicons/ionicons5";
 
 //@ts-expect-error No types
@@ -78,6 +85,9 @@ import html2pdf from "html2pdf.js";
     ArrowForwardOutline,
     NPopselect,
     NButton,
+    NStatistic,
+    NGrid,
+    NGridItem,
   },
 })
 export default class Calculation extends Vue {
@@ -93,10 +103,9 @@ export default class Calculation extends Vue {
   cost = 0;
   enquiryId = 0;
   selection = [
-    {label: "Brusinková 1974", value: "Brusinkova 1974, Cernosice"},
-    {label: "Mokropeská", value: "Mokropeska 1713, Cernosice"}
-  ]
-  
+    { label: "Brusinková 1974", value: "Brusinkova 1974, Cernosice" },
+    { label: "Mokropeská", value: "Mokropeska 1713, Cernosice" },
+  ];
 
   pointOne: LatLng = { lat: undefined, lng: undefined };
   pointTwo: LatLng = { lat: undefined, lng: undefined };
@@ -114,24 +123,43 @@ export default class Calculation extends Vue {
     this.pointOne = res.data.end.location;
     this.pointTwo = res.data.start.location;
     this.enquiryId = res.data.id;
-    this.destination = this.fromHome ? res.data.end.address : res.data.start.address;
+    this.destination = this.fromHome
+      ? res.data.end.address
+      : res.data.start.address;
   }
   public print() {
-    let myText = text
-    myText = myText.replaceAll("$time", new Date().toLocaleString())
-    myText = myText.replaceAll("$origin", this.fromHome ? this.origin : this.destination)
-    myText = myText.replaceAll("$destiny", this.fromHome ? this.destination : this.origin)
-    myText = myText.replaceAll("$distance", this.distance)
-    myText = myText.replaceAll("$price", this.price === 0 ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : this.price.toString())
-    let a = html2pdf().set({margin: 15, html2canvas: {scale: 2}, image: {type: "jpeg", quality: 1}}).from(myText).toPdf().save()
+    let myText = text;
+    myText = myText.replaceAll("$time", new Date().toLocaleString());
+    myText = myText.replaceAll(
+      "$origin",
+      this.fromHome ? this.origin : this.destination
+    );
+    myText = myText.replaceAll(
+      "$destiny",
+      this.fromHome ? this.destination : this.origin
+    );
+    myText = myText.replaceAll("$distance", this.distance);
+    myText = myText.replaceAll(
+      "$price",
+      this.price === 0
+        ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+        : this.price.toString()
+    );
+    let a = html2pdf()
+      .set({
+        margin: 15,
+        html2canvas: { scale: 2 },
+        image: { type: "jpeg", quality: 1 },
+      })
+      .from(myText)
+      .toPdf()
+      .save();
   }
 }
 interface LatLng {
   lat: number | undefined;
   lng: number | undefined;
 }
-
-
 
 const text = `<!DOCTYPE html>
 <html lang="en">
@@ -159,7 +187,7 @@ const text = `<!DOCTYPE html>
         font-size: 150%;
     }
 </style>
-</html>`
+</html>`;
 </script>
 
 <style scoped lang="scss">
@@ -174,10 +202,11 @@ const text = `<!DOCTYPE html>
 .n-switch {
   padding: 0.7rem 0.2rem;
 }
-
+.n-grid {
+  margin-top: 0.5rem;
+}
 
 .abx {
   width: 100%;
 }
-
 </style>
